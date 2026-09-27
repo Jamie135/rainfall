@@ -48,7 +48,7 @@ Le premier compte est `level0`, avec le mot de passe `level0`.
 Depuis un terminal **sur ta machine hôte** (pas dans la fenêtre de la VM) :
 
 ```sh
-ssh level00@127.0.0.1 -p 4242
+ssh level0@127.0.0.1 -p 4242
 ```
 
 À la demande de mot de passe, entre :
