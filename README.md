@@ -3,7 +3,7 @@
 ## Introduction
 
 Rainfall est un projet cybersécurité de l'école 42. Il se
-présente comme une série de niveaux (`level00`, `level01`, …) à l'intérieur d'une
+présente comme une série de niveaux (`level0`, `level1`, …) à l'intérieur d'une
 machine virtuelle. À chaque niveau, on se connecte avec un compte, on cherche une
 faille qui donne le mot de passe du niveau suivant, et on progresse ainsi de
 niveau en niveau. Le but est d'apprendre à repérer et comprendre différentes
