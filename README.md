@@ -64,7 +64,7 @@ Une fois connecté, l'invite devient quelque chose comme
 
 Pour sortir un binaire de la VM vers la machine hôte:
 ```bash
-scp -P 4242 level0@127.0.0.1:/home/user/levelX/levelX ~/Documents/42/rainfall/levelX/levelX.bin
+scp -P 4242 level0@127.0.0.1:/home/user/levelx/levelx ~/Documents/42/rainfall/levelx/levelx.bin
 ```
 
 Lire l'assembleur de main:
@@ -78,9 +78,9 @@ gdb -batch -ex 'disassemble main' levelx.bin
 
 ```bash
 ls -la  # 1. mon home : y a-t-il un fichier/programme bizarre ?
-cat /var/mail/levelXX # 2. un mail avec un indice ?
-find / -user flagXX  2>/dev/null # 3. les fichiers possédés par flagXX
-find / -group flagXX 2>/dev/null # 4. ceux accessibles via son groupe
+cat /var/mail/levelx # 2. un mail avec un indice ?
+find / -user flagx  2>/dev/null # 3. les fichiers possédés par flagx
+find / -group flagx 2>/dev/null # 4. ceux accessibles via son groupe
 find / -perm -4000   2>/dev/null # 5. les binaires setuid
 ls -la /etc/cron.d/ # 6. les tâches planifiées (cron)
 
