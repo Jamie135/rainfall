@@ -1,10 +1,10 @@
-# level7 — walkthrough
+# level7
 
-## Goal
+## Objectif
 
-Read the `.pass` file of the next user to obtain its password.
+Lire le fichier `.pass` de l'utilisateur suivant pour obtenir son mot de passe.
 
-## 1. Recon
+## 1. Reconnaissance
 
 ```sh
 ls -la
@@ -13,20 +13,14 @@ find / -user <next> 2>/dev/null
 find / -perm -4000 2>/dev/null
 ```
 
-## 2. Analysis
+## 2. Analyse
 
-Describe the binary, the vulnerability and why it is exploitable.
+Décrire le binaire, la vulnérabilité et pourquoi elle est exploitable.
 
 ## 3. Exploitation
 
 ```sh
-# The exact commands used to trigger the exploit.
+# Les commandes exactes qui déclenchent l'exploit.
 ```
 
-## 4. Result
-
-The recovered password for the next level.
-
-```
-Password: <fill in>
-```
+Le mot de passe récupéré est à reporter dans le fichier `flag`.
