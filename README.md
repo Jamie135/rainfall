@@ -62,6 +62,18 @@ Une fois connecté, l'invite devient quelque chose comme
 
 ## 3. Approches
 
+Pour sortir un binaire de la VM vers la machine hôte:
+```bash
+scp -P 4242 level0@127.0.0.1:/home/user/levelX/levelX ~/Documents/42/rainfall/levelX/levelX.bin
+```
+
+Lire l'assembleur de main:
+```bash
+objdump -d -M intel levelx.bin | sed -n '/<main>:/,/^$/p'
+# ou dans gdb :
+gdb -batch -ex 'disassemble main' levelx.bin
+```
+
 À chaque niveau, on déroule mentalement le même inventaire jusqu'à ce qu'un truc accroche :
 
 ```bash
@@ -71,6 +83,7 @@ find / -user flagXX  2>/dev/null # 3. les fichiers possédés par flagXX
 find / -group flagXX 2>/dev/null # 4. ceux accessibles via son groupe
 find / -perm -4000   2>/dev/null # 5. les binaires setuid
 ls -la /etc/cron.d/ # 6. les tâches planifiées (cron)
+
 ```
 
 ## 4. Outils
