@@ -64,7 +64,7 @@ Une fois connecté, l'invite devient quelque chose comme
 
 Pour sortir un binaire de la VM vers la machine hôte:
 ```bash
-scp -P 4242 level0@127.0.0.1:/home/user/levelx/levelx ~/Documents/42/rainfall/levelx/levelx.bin
+scp -P 4242 levelx@127.0.0.1:/home/user/levelx/levelx ~/Documents/42/rainfall/levelx/levelx.bin
 ```
 
 Lire l'assembleur de main:
