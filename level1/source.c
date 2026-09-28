@@ -9,8 +9,6 @@ void run(void)
   return;
 }
 
-
-
 void main(void)
 {
   char buffer [64];
