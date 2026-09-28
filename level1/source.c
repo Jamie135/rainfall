@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void run(void)
 {
@@ -12,7 +13,7 @@ void run(void)
 
 void main(void)
 {
-  char buffer [76];
+  char buffer [64];
   
   gets(buffer);
   return;
