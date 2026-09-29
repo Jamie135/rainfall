@@ -69,9 +69,8 @@ scp -P 4242 levelx@127.0.0.1:/home/user/levelx/levelx ~/Documents/42/rainfall/le
 
 Lire l'assembleur de main:
 ```bash
-objdump -d -M intel levelx.bin | sed -n '/<main>:/,/^$/p'
-# ou dans gdb :
-gdb -batch -ex 'disassemble main' levelx.bin
+gdb ./levelx
+disas main
 ```
 
 À chaque niveau, on déroule mentalement le même inventaire jusqu'à ce qu'un truc accroche :
