@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int m;
+
 void v(void)
 {
-  int m = 0;
   char buffer [520];
   
   fgets(buffer, 512, stdin);
