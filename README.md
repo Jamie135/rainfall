@@ -73,16 +73,11 @@ gdb ./levelx
 disas main
 ```
 
-À chaque niveau, on déroule mentalement le même inventaire jusqu'à ce qu'un truc accroche :
+Inspecter les fonctions cachées :
 
 ```bash
-ls -la  # 1. mon home : y a-t-il un fichier/programme bizarre ?
-cat /var/mail/levelx # 2. un mail avec un indice ?
-find / -user flagx  2>/dev/null # 3. les fichiers possédés par flagx
-find / -group flagx 2>/dev/null # 4. ceux accessibles via son groupe
-find / -perm -4000   2>/dev/null # 5. les binaires setuid
-ls -la /etc/cron.d/ # 6. les tâches planifiées (cron)
-
+info functions
+disas <fonction>
 ```
 
 ## 4. Outils
