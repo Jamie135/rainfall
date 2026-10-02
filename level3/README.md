@@ -44,7 +44,7 @@ Deux choses importantes :
 
 ### Rappel : comment `printf` fonctionne
 
-**1. `printf` en fonctionnement normal**
+**a. `printf` en fonctionnement normal**
 
 Quand tu écris :
 
@@ -64,7 +64,7 @@ printf("j'ai %d ans et je m'appelle %s", 25, "toto");
 Donc `%d` = « prends le prochain argument et affiche-le en décimal », `%x` =
 « … en hexadécimal », `%s` = « … comme une chaîne », etc.
 
-**2. 🔑 Le détail qui change tout : d'où viennent les arguments ?**
+**b. 🔑 Le détail qui change tout : d'où viennent les arguments ?**
 
 Voici le point crucial. `printf` **ne sait pas** combien d'arguments on lui a
 réellement passés. Il fait **aveuglément confiance au format** : chaque `%` du
@@ -100,10 +100,39 @@ exactement 64**, le programme lance `system("/bin/sh")`. Rien dans le code ne
 modifie `m` (elle reste à 0) : c'est à nous de la forcer à 64, en exploitant la
 faille de format string.
 
-## 3. Trouver la position de notre saisie sur la pile
+## 3. L'outil de l'exploitation : `%n`
 
-Pour que `%n` écrive à l'adresse trouvée en argument. Il faut d'abord savoir à quel numéro
-d'argument correspond le début de notre saisie. On sonde la pile avec des `%x` :
+C'est le spécificateur `%n` qui va nous permettre d'exploiter `printf`. À la
+différence de `%x` ou `%d` qui **lisent** un argument pour l'afficher, `%n` **lis** un argument, le traite comme une adresse (`int *`), et
+**y écrit le nombre de caractères que `printf` a affichés jusqu'ici**.
+
+```c
+int count;
+printf("abcde%n", &count);   // count reçoit 5 : "abcde" = 5 caractères affichés
+```
+
+`printf` ne décide pas *où* écrire : il écrit simplement à **l'adresse contenue
+dans le slot d'argument** de ce `%n`, quelle qu'elle soit. C'est exactement ce
+qu'on va détourner.
+
+Donc, pour écrire nous-mêmes **64 dans `m`** via le compteur d'un `%n`, il faut
+réunir **deux conditions** :
+
+1. **l'adresse de `m` (`0x804988c`) doit être passée dans le slot d'argument que
+   le `%n` consomme** — sinon `printf` écrira le compteur ailleurs ;
+2. **au moment où `printf` atteint le `%n`, le compteur doit valoir exactement
+   64** — c'est cette valeur qui sera écrite dans `m`.
+
+Les deux sections suivantes règlent chacune une de ces conditions : d'abord
+**trouver à quel slot d'argument correspond notre saisie** (pour y glisser
+l'adresse de `m`), puis **construire le format qui affiche exactement 64
+caractères** avant le `%n`.
+
+## 4. Trouver la position de notre saisie sur la pile
+
+Pour satisfaire la **1ʳᵉ condition** (l'adresse de `m` dans le slot du `%n`), il
+faut d'abord savoir à quel numéro d'argument correspond le début de notre saisie.
+On sonde la pile avec des `%x` :
 
 ```sh
 python -c 'print "AAAA" + ".%x"*10' | ./level3
@@ -119,7 +148,7 @@ lui-même sur la pile, `printf` finit par lire son propre contenu. Le `41414141`
 (= `AAAA`) apparaît au **4ᵉ `%x`** → le début de notre saisie est le **4ᵉ
 argument** vu par `printf`. C'est là qu'on placera l'adresse de `m`.
 
-## 4. Construire le payload
+## 5. Construire le payload
 
 On veut **écrire 64 dans `m` (`0x804988c`)** avec `%n`. `%n` écrit le **nombre de
 caractères déjà affichés** à l'adresse fournie en argument.
@@ -150,7 +179,7 @@ Au moment du `%n`, le compteur vaut **64** → `m` reçoit 64. Les `%20x`
 ⚠️ L'adresse contient des octets non imprimables (`8c`, `98`, `04`, `08`) : on ne
 peut pas la taper au clavier, il faut la générer (python, `printf`, perl…).
 
-## 5. Exécuter et récupérer le flag
+## 6. Exécuter et récupérer le flag
 
 ```sh
 (printf '\x8c\x98\x04\x08%%20x%%20x%%20x%%n'; cat) | ./level3
