@@ -87,6 +87,14 @@ Stratégie : placer un shellcode au début de la saisie (donc au début de la co
 sur le tas), et écraser l'adresse de retour de `p` avec l'adresse **renvoyée par
 `strdup`** (là où la copie a été déposée).
 
+On a donc **trois choses à faire** pour exploiter via `strdup` :
+
+1. **calculer l'offset** jusqu'à l'adresse de retour — l'endroit qu'on va écraser
+   avec l'adresse du tas (section 4) ;
+2. **déterminer l'adresse de la copie sur le tas** renvoyée par `strdup`, celle
+   qui passe la protection (section 5) ;
+3. **construire le shellcode** qui va lancer le shell (section 6).
+
 ## 4. Calculer l'offset
 
 Le buffer étant repéré par rapport à `ebp` (fixe), l'offset se lit directement :
@@ -140,9 +148,10 @@ Le binaire est setuid `level3` (uid effectif `level3`, uid réel `level2`). Comm
 2. `setreuid(euid, euid)` (syscall 70) → uid réel = uid effectif = `level3`.
 3. `execve("/bin/sh", …)` (syscall 11) → lance le shell.
 
-Chaque appel système suit le même schéma : numéro dans `eax`, arguments dans
-`ebx`/`ecx`/`edx`, déclenchement par `int 0x80`. La chaîne `"/bin/sh"` est
-construite sur la pile (empilée à l'envers), puis pointée via `esp`.
+Pourquoi écrire ces trois appels sous forme de shellcode (en **octets**)? Au moment où l'exploit détourne l'exécution, on saute **directement sur notre
+copie dans le tas** : il n'y a ni compilateur, ni éditeur de liens, ni appel de
+fonction en place. Le **processeur exécute tels quels les octets** qu'il trouve
+à cette adresse, en les interprétant comme des instructions machine.
 
 Shellcode (41 octets, sans octet nul) :
 
@@ -162,13 +171,10 @@ nasm -f bin shellcode.asm -o shellcode.bin            # assemble en binaire brut
 xxd -p shellcode.bin | tr -d '\n' | sed 's/../\\x&/g' # octets au format little-endian
 ```
 
-Deux vérifications indispensables :
+Vérification:
 
-- **`wc -c < shellcode.bin` = 41** : la taille attendue (sert au calcul du
+- **`wc -c < shellcode.bin` = ??** : la taille attendue (sert au calcul du
   remplissage en section 7).
-- **aucun octet nul** (`grep -c '^00$'` renvoie `0`) : un `\x00` tronquerait la
-  copie faite par `gets`/`strdup`. C'est pour ça qu'on fait `xor eax,eax` +
-  `mov al,NN` au lieu de `mov eax,NN` (ce dernier produirait des octets nuls).
 
 ## 7. Le payload et l'exécution
 
