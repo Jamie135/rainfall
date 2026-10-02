@@ -85,8 +85,8 @@ moitiés de 16 bits** avec **`%hn`** (qui écrit 2 octets) :
 0x080484a4  =  0x0804 (moitié haute)  |  0x84a4 (moitié basse)
 ```
 
-- `0x0804` = 2052 → à écrire dans les 2 octets hauts → adresse `0x804983a`
-- `0x84a4` = 33956 → à écrire dans les 2 octets bas  → adresse `0x8049838`
+- `0x0804` = 2052 → à écrire dans les 2 octets hauts → `0x804983a` = adresse GOT[exit] + 2
+- `0x84a4` = 33956 → à écrire dans les 2 octets bas  → adresse `0x8049838` = adresse GOT[exit]
 
 Relues en little-endian, ces 4 cases (`a4 84 04 08`) redonnent `0x080484a4`.
 
