@@ -85,13 +85,25 @@ moitiés de 16 bits** avec **`%hn`** (qui écrit 2 octets) :
 0x080484a4  =  0x0804 (moitié haute)  |  0x84a4 (moitié basse)
 ```
 
+En *little-endian* : les 4 octets
+d'`0x080484a4` sont rangés en mémoire de l'octet de poids faible vers le fort.
+
+```
+adresse : 0x8049838  0x8049839  0x804983a  0x804983b
+octet   :    a4         84         04         08
+           └────┬──────────┘      └────┬────────┘
+            0x84a4 (bas)          0x0804 (haut)
+```
+
+Les 2 octets de poids **faible** (`0x84a4`) occupent donc `0x8049838` (= GOT[exit]),
+et les 2 de poids **fort** (`0x0804`) occupent `0x804983a` (= GOT[exit] + 2). Chaque
+`%hn` n'écrit que 2 octets : on pointe `GOT[exit]` pour la moitié basse et
+`GOT[exit] + 2` pour la moitié haute.
+
 - `0x0804` = 2052 → à écrire dans les 2 octets hauts → `0x804983a` = adresse GOT[exit] + 2
 - `0x84a4` = 33956 → à écrire dans les 2 octets bas  → adresse `0x8049838` = adresse GOT[exit]
 
-Relues en little-endian, ces 4 cases (`a4 84 04 08`) redonnent `0x080484a4`.
-
-On place les deux adresses au début (positions 4 et 5), et on écrit la plus
-petite valeur d'abord (le compteur ne fait que monter) :
+Par la suite, on sait que comme pour `%n`, un `%hn` écrit à l'adresse *pointée par son argument* sur la pile. On réalise ici **deux** écritures vers **deux** adresses différentes (`0x8049838` et `0x804983a`) : il faut donc **deux** pointeurs distincts sur la pile. On écrit la plus petite valeur d'abord, d'où: `%4$hn` consomme celui de la position 4 pour `0x804983a`, `%5$hn` celui de la position 5 pour `0x8049838`:
 
 | Étape | Affiché | Compteur | Action |
 |---|---|---|---|
