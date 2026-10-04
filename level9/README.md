@@ -37,6 +37,17 @@
    offset 0x68 : number        (l'int du constructeur)
    ```
 
+   > **Qu'est-ce qu'une vtable ?**
+   > En C++, une fonction `virtual` peut etre redefinie dans une classe fille : le
+   > programme ne sait qu'a l'execution quelle version appeler (polymorphisme). Le
+   > compilateur cree donc une **vtable** = un tableau de pointeurs vers les
+   > fonctions virtuelles, et chaque objet range a son offset 0 un **pointeur vers
+   > cette vtable**. Appeler une methode virtuelle se fait en deux temps : (1) lire
+   > le pointeur de vtable dans l'objet, puis (2) y chercher la bonne fonction et
+   > l'appeler. **Pourquoi ca nous interesse :** si on modifie le pointeur de vtable
+   > de `b`, l'appel virtuel saute vers ce qu'on veut au lieu de la vraie fonction —
+   > c'est tout l'exploit.
+
    Le constructeur ecrit une adresse en dur a l'offset 0 (`movl $0x8048848,(%eax)`)
    et `number` a l'offset 0x68. On verifie cette adresse dans gdb :
 
@@ -84,9 +95,8 @@
 
    `main` cree **deux objets** adjacents sur le heap (`new N(5)`, `new N(6)`),
    remplit le buffer du **premier (a)** avec `argv[1]`, puis fait un **appel
-   virtuel** sur le **second (b)** 
+   virtuel** sur le **second (b)**
 
-   
    D'ailleurs avan l'appel de la methode virtuel l'instance a lance `setAnnotation` qui fait un **memcpy non borne en utlisant `argv[1]`** :
 
    ```x86asm
@@ -94,6 +104,13 @@
    add  $0x4,%edx          ; this+4 = buffer annotation
    call memcpy             ; memcpy(this->annotation, argv[1], strlen(argv[1]))
    ```
+
+   > **Rappel — que fait `memcpy` ?**
+   > `memcpy(dest, source, taille)` copie `taille` octets bruts de `source` vers
+   > `dest`. Ici `memcpy(this+4, argv[1], strlen(argv[1]))` : la taille copiee =
+   > la longueur de `argv[1]`, choisie par l'attaquant. Passer plus de 100 octets
+   > deborde le buffer — `memcpy` ne verifie jamais que ca rentre (meme famille de
+   > faille que `gets`/`strcpy`).
 
    Etant donné que A et B sont contiguss, allons chercher les information de leur adresses sur la heap via leur adresses stoké sur la stack
    **Adresses (lues dans gdb)** :
