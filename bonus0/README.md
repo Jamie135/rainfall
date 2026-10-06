@@ -184,38 +184,10 @@ On vise le **milieu du sled NOP** : `0xbffff... + 0x64 = 0xbffff...` (soit
 
 ### d. Trouver l'offset de l'adresse de retour
 
-On envoie un **motif cyclique** (`Aa0Aa1Aa2…`, chaque fragment de 4 est unique) en
+On envoie un **motif** (`AAAABBBB…`, chaque fragment de 4 est unique) en
 le tapant **interactivement** dans gdb — il faut taper les deux lignes à la main,
 l'une après l'autre, car le programme fait **deux `read` distincts** (un seul flux
 collé serait avalé d'un coup par le premier `read`).
-
-```console
-(gdb) run
-Starting program: /home/user/bonus0/bonus0
- -
-AAAAAAAAAAAAAAAAAAAA          <- 1ère saisie : 20 'A' (remplit buffer1, sans '\0')
- -
-Aa0Aa1Aa2Aa3Aa4Aa5...        <- 2e saisie : le motif cyclique
-
-Program received signal SIGSEGV, Segmentation fault.
-0x41336141 in ?? ()
-```
-
-`EIP = 0x41336141`. En little-endian ce sont les octets `41 61 33 41` = **`"Aa3A"`**.
-Dans le motif `Aa0Aa1Aa2Aa3…`, la séquence `Aa3A` commence au **9ᵉ octet** de la
-2ᵉ saisie. Donc :
-
-```
-2e saisie = [9 octets de bourrage] [adresse de retour (4 octets)] [reste]
-```
-
-> **Variante plus lisible du motif.** Le motif `Aa0Aa1…` n'est pas toujours
-> évident à décoder. On peut utiliser un motif par **blocs de 4 lettres
-> identiques** — `AAAABBBBCCCCDDDDEEEE` — où chaque bloc de 4 octets porte une
-> lettre différente. Comme les 4 octets d'un bloc sont identiques, on repère d'un
-> coup d'œil sur quel bloc est tombée l'adresse de retour.
-
-Exemple complet avec ce motif :
 
 ```console
 (gdb) run
