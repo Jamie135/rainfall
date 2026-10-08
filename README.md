@@ -60,24 +60,46 @@ level0
 Une fois connecté, l'invite devient quelque chose comme
 `level0@RainFall:~$`. Tu es dans la VM, prêt à commencer le premier niveau.
 
-## 3. Approches
+## 3. Commandes
 
 Pour sortir un binaire de la VM vers la machine hôte:
 ```bash
-scp -P 4242 levelx@127.0.0.1:/home/user/levelx/levelx ~/Documents/42/rainfall/levelx/levelx.bin
+scp -P 4242 levelxx@127.0.0.1:/home/user/levelxx/levelxx ~/Documents/42/override/levelxx/levelxx.bin
 ```
 
-Lire l'assembleur de main:
+Désassembler le binaire:
 ```bash
-gdb ./levelx
-disas main
+objdump -d ./levelxx
+```
+
+Debugger le binaire:
+```bash
+gdb ./levelxx
+(gdb) disas main
+```
+
+Set breakpoint:
+```bash
+(gdb) break *0x<adresse de l'instruction>
+(gdb) run
+```
+
+Examiner une variable et se repérer dans les instructions:
+```bash
+(gdb) x/s 0x<adresse de variable>
+(gdb) x/i $pc
+```
+
+Déplacer à la prochaine instruction:
+```bash
+(gdb) stepi
 ```
 
 Inspecter les fonctions cachées :
 
 ```bash
-info functions
-disas <fonction>
+(gdb) info functions
+(gdb) disas <fonction>
 ```
 
 ## 4. Outils
